@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cassandra-config
+  labels:
+    app: cassandra
+data:
+  CASSANDRA_DB: cassandradb
+  CASSANDRA_USER: admin
+  CASSANDRA_PASSWORD: admin123
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cassandra
+spec:
+  serviceName: cassandra
+  selector:
+    matchLabels:
+      app: cassandra
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cassandra
+    spec:
+      containers:
+        - name: cassandra
+          image: cassandra:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+          - containerPort: 9042
+          envFrom:
+          - configMapRef:
+              name: cassandra-config
+          volumeMounts:
+          - name: data
+            mountPath: /var/lib/cassandra/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: example-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra
+  labels:
+    app: cassandra
+spec:
+  selector:
+    app: cassandra
+  ports:
+  - protocol: TCP
+    name: http
+    port: 9042
+    targetPort: 9042
