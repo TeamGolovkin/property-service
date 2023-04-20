@@ -6,8 +6,8 @@ metadata:
     app: cassandra
 data:
   CASSANDRA_DB: cassandradb
-  CASSANDRA_USER: admin
-  CASSANDRA_PASSWORD: admin123
+  CASSANDRA_USER: root
+  CASSANDRA_PASSWORD: root
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -27,7 +27,7 @@ spec:
       containers:
         - name: cassandra
           image: cassandra:latest
-          imagePullPolicy: "IfNotPresent"
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 9042
           envFrom:
@@ -39,12 +39,12 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: example-claim
+          claimName: property
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cassandra
+  name: property-db
   labels:
     app: cassandra
 spec:
