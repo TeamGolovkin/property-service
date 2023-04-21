@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  labels:
+    name: ingress
+spec:
+  rules:
+  - host: minibooking.com
+    http:
+      paths:
+      - path: "/user"
+        pathType: Prefix
+        backend:
+          service:
+            name: user-service
+            port: 
+              number: 8081
+      - path: "/property"
+        pathType: Prefix
+        backend:
+          service:
+            name: property-service
+            port: 
+              number: 8082

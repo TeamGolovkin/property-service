@@ -4,10 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraOperations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpSession;
 
 
 @RestController
@@ -27,17 +31,18 @@ public class PropertyController {
 	}
 
 	@PostMapping("/property")
-	public void addProperty() {
-		PropertyOfUser peshoMansion = new PropertyOfUser(1,
-														 1,
-														 "pesh manshon",
-														 "us za isus",
-														 69);
-		cassandraTemplate.insert(peshoMansion);
+	public ResponseEntity<String> addProperty(HttpSession session, @RequestBody PropertyOfUser propertyOfUser) {
+		if (session.getAttribute("userId") == null) {
+			return ResponseEntity.badRequest().body("user not logged in!");
+		}
+
+		cassandraTemplate.insert(propertyOfUser);
+		return ResponseEntity.ok().body("OK");
 	}
 
 	@PostMapping("/request")
-	public void requestProperty() {
-		kafkaTemplate.send("requested", "Pesho iska kushta");
+	public ResponseEntity<String> requestProperty() {
+		kafkaTemplate.send("request", "Pesho iska kushta");
+		return ResponseEntity.ok().body("OK");
 	}
 }
